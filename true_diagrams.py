@@ -77,8 +77,6 @@ def run_program():
             data = pd.read_excel(file_path, sheet_name=sheet_name.get()) 
             data = data.apply(pd.to_numeric, errors='coerce')#.dropna()  
         elif '.dat' in file_path:
-            #data = pd.read_table(file_path, delimiter='\s+', encoding=encoding, engine='python') # delimiter='\s+'  
-            #data = data.apply(pd.to_numeric, errors='coerce') 
             directory = os.path.dirname(file_path)
             new_file_path = os.path.join(directory, 'new_file.dat')
             with open(file_path) as f, open(new_file_path, 'w') as output_file:    
@@ -90,7 +88,6 @@ def run_program():
             data = data.apply(pd.to_numeric, errors='coerce') 
             os.remove(new_file_path)     
         else:
-            #data = pd.read_fwf(file_path, delimiter=None, encoding=encoding, engine='python')
             data = pd.read_table(file_path, sep=None, encoding=encoding, engine='python')
             data = data.apply(pd.to_numeric, errors='coerce')
     except:        
@@ -150,7 +147,6 @@ def run_program():
     plt.xlabel("Удлинение")
     plt.ylabel("Напряжение, МПа")
     plt.plot(data_elong, data_tens, 'b')
-    #plt.plot(data.iloc[:, num_elong], data.iloc[:, num_tens], 'b')
     plt.title('График напряжения-удлинения по данным из файла')
     plt.show()
 
@@ -169,7 +165,7 @@ def smoothed():
         data_tens = smoothed_y
         y = data_tens 
     
-    x = data_elong[:len(y) // 2]#[y <= predel_teck]
+    x = data_elong[:len(y) // 2]
     y = data_tens[:len(y) // 2]
 
     y1 = 0.4 * predel_teck
@@ -184,7 +180,6 @@ def smoothed():
     a = (y2 - y1) / (x2 - x1)  # наклон прямой
     b = y1 - a * x1  # смещение прямой по вертикали
 
-    x_pred = (y[-1] + b) / a  
     x_intersect = 0#-b / a
     y_intersect = 0  
     # Создаем массив точек для построения луча
@@ -262,7 +257,6 @@ def wrapper():
     global ln_res, exp_res, ind_max, after_max, exp_y
     ln_res_1 = np.concatenate((ln_res[:ind_max], after_max))
     exp_res_1 = np.concatenate((exp_res[:ind_max], exp_y))
-    #ln_res, exp_res = ln_result_x, exp_result_y
     plt.plot(ln_res_1, exp_res_1, 'y', label='Истинная')
     plt.xlabel('Удлинение')
     plt.ylabel('Напряжение, МПа')
@@ -321,13 +315,11 @@ def program_choose():
         point = plt.ginput(n=1, show_clicks=True, timeout=0)
         if not point: # если пользователь нажал клавишу для завершения
             break
-        #distances = np.abs(ln_result_x - point[0][0])
         distances = [np.sqrt((point[0][0] - point_[0])**2 + (point[0][1] - point_[1])**2) for point_ in all_points]
         min_dist_idx = np.argmin(distances)
         closest_point = all_points[min_dist_idx]
         selected_points.append(closest_point)
         plt.plot(closest_point[0], closest_point[1], 'ro')
-        #plt.plot(point[0][0], point[0][1], 'ro')
     plt.show()
 
     approc_x = np.linspace(after_max[-1], 3.0, 300)
@@ -366,7 +358,6 @@ def program_choose():
                 s = 1
             else:
                 s = 0                      
-    # Возвращаем результат
             return round(val, s)
         y_ = SpecialRound(selected_points[0][1]) 
         selected_points[0] = (y_ / 200000, y_)
